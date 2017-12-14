@@ -19,9 +19,6 @@ h1 {
   font-size: 14px;
   z-index: 1000;
 }
-svg {
-  float: left;
-}
 text {
   font: 12px sans-serif;
   font-weight: bold;
@@ -40,10 +37,6 @@ text {
 <div class="tooltipBox"><center><b><span id="groupe"></span>&nbsp;:</b> <span id="value"></span> (<span id="percent"></span>&nbsp;%)</center></div>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script>
-
-var width = window.innerWidth - 20,
-    height = 120;
-
 d3.formatDefaultLocale({
   "decimal": ",",
   "thousands": " ",
@@ -51,60 +44,59 @@ d3.formatDefaultLocale({
   "currency": ["€", ""],
 });
 
+var width = window.innerWidth - 20,
+  mouseover = function(d, i) {
+    d3.select(".legi" + d.legi + ' rect[did="' + i + '"]').style("opacity", 0.75);
+  },
+  mousemove = function(d, i) {
+    d3.select(".tooltipBox")
+      .style("left", d3.event.pageX - 60 + "px")
+      .style("top", d3.event.pageY + 20 + "px")
+      .style("display", "block");
+    d3.select("#groupe").text(d.groupe);
+    d3.select("#value").text(d3.format(",d")(d.value));
+    d3.select("#percent").text(Math.round(d.value / d.sum * 100));
+  },
+  mouseleave = function(d, i) {
+    d3.select(".tooltipBox").style("display", "none");
+    d3.select(".legi" + d.legi + ' rect[did="' + i + '"]').style("opacity", 0.6);
+  };
+
 d3.json("data/amendements_adoptes.json", function(error, data) {
   if (error) throw error;
-  console.log(data);
-
   data.legislatures.forEach(function(legislature) {
-    var sum = 0,
+    var legi = legislature.id,
+      sum = 0,
+      pos = 0,
       groupes = Object.keys(legislature.groupes).map(function(g) {
         sum += legislature.groupes[g];
         return {
+          "legi": legislature.id,
           "groupe": g,
           "value": legislature.groupes[g],
           "color": data.couleurs[g],
           "majo": ~legislature.majorite.indexOf(g) || g === "Gouvernement"
         };
       }),
+      scale = function(d) { console.log(sum, width, d); return (width - 50) * d.value / sum; },
       svg = d3.select("body").append("svg")
         .attr("width", width)
-        .attr("height", height)
+        .attr("height", 120)
         .append("g"),
-      g = svg.selectAll(".groupe .legi" + legislature.id)
-        .data(d3.pie()
-          .sort(null)
-          .value(function(d) { return d.value; })
-          (groupes)
-        ).enter().append("g")
-          .attr("class", "groupe legi" + legislature.id)
-          .attr("transform", "translate(25, 30)"),
-      scale = function(d) { console.log(sum, width, d); return (width - 50) * d.data.value / sum; },
-      mouseover = function(d, i) {
-        d3.select(".legi" + legislature.id + ' rect[did="' + i + '"]').style("opacity", 0.75);
-      },
-      mousemove = function(d, i) {
-        d3.select(".tooltipBox")
-          .style("left", d3.event.pageX - 60 + "px")
-          .style("top", d3.event.pageY + 20 + "px")
-          .style("display", "block");
-        d3.select("#groupe").text(d.data.groupe);
-        d3.select("#value").text(d3.format(",d")(d.data.value));
-        d3.select("#percent").text(Math.round(d.data.value / sum * 100));
-      },
-      mouseleave = function(d, i) {
-        d3.select(".tooltipBox").style("display", "none");
-        d3.select(".legi" + legislature.id + ' rect[did="' + i + '"]').style("opacity", 0.6);
-      };
+      g = svg.selectAll(".groupe .legi" + legi)
+        .data(groupes)
+        .enter().append("g")
+          .attr("class", "groupe legi" + legi)
+          .attr("transform", "translate(25, 30)");
 
-    var pos = 0;
     g.append("rect")
-      .attr("did", function(d, i) { return i; })
+      .attr("did", function(d, i) { d.sum = sum; return i; })
       .attr("height", 50)
       .attr("width", scale)
       .attr("x", function(d) { pos += scale(d); return pos - scale(d); })
       .attr("y", 5)
-      .style("fill", function(d) { return data.couleurs[d.data.groupe]; })
-      .style("stroke", function(d) { return (d.data.majo ? "black" : "none"); })
+      .style("fill", function(d) { return data.couleurs[d.groupe]; })
+      .style("stroke", function(d) { return (d.majo ? "black" : "none"); })
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave);
@@ -112,15 +104,15 @@ d3.json("data/amendements_adoptes.json", function(error, data) {
     pos = 0;
     g.append("text")
       .attr("transform", function(d, i) { pos += scale(d); return 'translate(' + (pos - scale(d) / 2) + "," + (i % 2 ? 0 : 70) + ")"; })
-      .attr("color", function(d) { return d.data.color; })
-      .text(function(d) { return d.data.groupe; })
+      .attr("color", function(d) { return d.color; })
+      .text(function(d) { return d.groupe; })
       .on("mouseover", mouseover)
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave);
 
     svg.append("text")
-      .text(function(d) { return legislature.id+"ème législature (" + sum + " amendements" +
-        (legislature.id === 13 ? " — hémicycle uniquement" : "") + ")";
+      .text(function(d) { return legi + "ème législature (" + d3.format(",d")(sum) + " amendements" +
+        (legi === 13 ? " — hémicycle uniquement" : "") + ")";
       })
       .attr("transform", "translate(10, 20)");
   });
