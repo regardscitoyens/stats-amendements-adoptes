@@ -1,0 +1,60 @@
+{
+ "legislatures": [
+  {
+   "id": 13,
+   "groupes": {
+    "Gouvernement": 2516,
+    "UMP": 9159,
+    "NC": 442,
+    "SRC": 1146,
+    "GDR": 232,
+    "NI": 36
+   },
+   "majorite": ["NC", "UMP"]
+  }, {
+   "id": 14,
+   "groupes": {
+    "Gouvernement": 5197,
+    "SER": 25326,
+    "RRDP": 916,
+    "GDR": 419,
+    "UDI": 492,
+    "LR": 2008,
+    "NI": 1390
+   },
+   "majorite": ["SER", "RRDP"]
+  }, {
+   "id": 15,
+   "groupes": {
+    "Gouvernement": 318,
+    "LREM": 1285,
+    "MODEM": 72,
+    "LC": 47,
+    "UAI": 9,
+    "LR": 76,
+    "LFI": 23,
+    "GDR": 19,
+    "NG": 100,
+    "NI": 2
+   },
+   "majorite": ["LREM", "MODEM"]
+  }
+ ],
+ "couleurs": {
+  "LFI": "rgb(204,42,70)",
+  "GDR": "rgb(255,30,30)",
+  "SRC": "rgb(255,50,190)",
+  "SER": "rgb(255,50,190)",
+  "NG": "rgb(255,50,190)",
+  "RRDP": "rgb(250,195,132)",
+  "LREM": "rgb(232,197,5)",
+  "MODEM": "rgb(247,138,13)",
+  "NC": "rgb(30,180,255)",
+  "UDI": "rgb(30,180,255)",
+  "LC": "rgb(30,180,255)",
+  "UAI": "rgb(30,180,255)",
+  "UMP": "rgb(30,30,200)",
+  "LR": "rgb(30,30,200)",
+  "NI": "rgb(165,165,165)",
+  "Gouvernement": "rgb(140,190,140)" }
+}
