@@ -9,13 +9,16 @@ p {
   margin: auto;
   width: 60%;
 }
+a {
+  color: black!important;
+}
 .tooltipBox {
   background: lightgrey;
   border: 1px solid black;
   border-radius: 5px;
   color: black;
   display: none;
-  width: 120px;
+  width: 125px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -37,8 +40,9 @@ text {
 }
 </style>
 <body>
-<h1>Répartition des amendements adoptés à l'Assemblée nationale par origine</h1>
-<div class="tooltipBox"><center><b><span id="groupe"></span>&nbsp;:</b> <span id="value"></span> (<span id="percent"></span>&nbsp;%)</center></div>
+<h1>Répartition des amendements adoptés à l'Assemblée nationale par origine<br/>
+<small>(données extraites de <a href="https://www.NosDéputés.fr">NosDéputés.fr</a> par <a href="https://RegardsCitoyens.org">Regards Citoyens</a>)</small></h1>
+<div class="tooltipBox"><center><b><span id="groupe"></span>&nbsp;:</b><br/><span id="value"></span> (<span id="percent"></span>&nbsp;%)</center></div>
 <div id="graphes"></div>
 <p><u>Attention :</u> pour les 13ème et 14ème législatures, les groupes décomptés sont ceux en fin de mandat des auteurs des amendements adoptés, ce qui explique pour la 14ème la proportion importante des Non Inscrits et l'absence des groupes UMP, R-UMP et ECOLO disparus en cours de législature et dont les amendements sont répartis entre les groupes LR, SER et NI).</p>
 <p>Les volumes globaux sont par ailleurs peu comparables car ils incluent les amendements de commission dont la publication n'a débuté qu'au milieu de la 14ème législature.</p>
@@ -51,7 +55,7 @@ d3.formatDefaultLocale({
   "currency": ["€", ""],
 });
 
-var width = window.innerWidth - 20,
+var width = window.innerWidth,
   mouseover = function(d, i) {
     d3.select(".legi" + d.legi + ' rect[did="' + i + '"]').style("opacity", 0.75);
   },
@@ -85,7 +89,7 @@ d3.json("data/amendements_adoptes.json", function(error, data) {
           "majo": ~legislature.majorite.indexOf(g) || g === "Gouvernement"
         };
       }),
-      scale = function(d) { console.log(sum, width, d); return (width - 50) * d.value / sum; },
+      scale = function(d) { return (width - 140) * d.value / sum; },
       svg = d3.select("#graphes").append("svg")
         .attr("width", width)
         .attr("height", 120)
@@ -94,7 +98,7 @@ d3.json("data/amendements_adoptes.json", function(error, data) {
         .data(groupes)
         .enter().append("g")
           .attr("class", "groupe legi" + legi)
-          .attr("transform", "translate(25, 30)");
+          .attr("transform", "translate(50, 30)");
 
     g.append("rect")
       .attr("did", function(d, i) { d.sum = sum; return i; })
@@ -121,7 +125,7 @@ d3.json("data/amendements_adoptes.json", function(error, data) {
       .text(function(d) { return legi + "ème législature (" + d3.format(",d")(sum) + " amendements" +
         (legi === 13 ? " — hémicycle uniquement" : "") + ")";
       })
-      .attr("transform", "translate(10, 20)");
+      .attr("transform", "translate(25, 20)");
   });
 });
 </script>
