@@ -120,7 +120,7 @@ d3.json("data/amendements_adoptes.json", function(error, data) {
       .on("mouseleave", mouseleave);
 
     svg.append("text")
-      .text(function(d) { return legi + "ème législature (" + d3.format(",d")(sum) + " amendements" +
+      .text(function(d) { return legi + "ème législature (" + d3.format(",d")(sum) + " amendements adoptés" +
         (legi === 13 ? " — hémicycle uniquement" : (legi === 15 ? " — au 16 mai 2018" : "")) + ")";
       })
       .attr("transform", "translate(25, 20)");
